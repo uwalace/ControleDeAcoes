@@ -7,6 +7,8 @@ using StockApp.Domain.Interfaces.Repository;
 using System.Linq.Expressions;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using System.Collections;
 
 namespace StockApp.Infra.Data.Repository
 {
@@ -22,47 +24,50 @@ namespace StockApp.Infra.Data.Repository
 			DbSet = _context.Set<TEntity>();
 		}
 
-		public IEnumerable<ValidationResult> Create(TEntity entity)
+		public async Task<IEnumerable<ValidationResult>> CreateAsync(TEntity entity)
 		{
 			DbSet.Add(entity);
-			return this.SaveChanges();
+			return await this.SaveChangesAsync();
 		}
 
-		public void Delete(TEntity entity)
+		public async void DeleteAsync(TEntity entity)
 		{
 			DbSet.Remove(entity);
-			_context.SaveChanges();
+			await _context.SaveChangesAsync();
+			
 		}
 				
-		public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, bool @readonly = false)
+		public virtual async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, bool @readonly = false)
 		{
-			return @readonly
-				? DbSet.AsNoTracking().Where(predicate).ToList()
-				: DbSet.Where(predicate).ToList();
+			if (@readonly)
+				return await DbSet.AsNoTracking().Where(predicate).ToListAsync();
+			else
+				return await DbSet.Where(predicate).ToListAsync();
 		}
 
-		public IEnumerable<TEntity> GetAll( bool @readonly = false)
+		public async Task<IEnumerable<TEntity>> GetAllAsync( bool @readonly = false)
 		{
-			return @readonly
-				? DbSet.AsNoTracking().ToList()
-				: DbSet.ToList();
+			if (@readonly)
+				return await DbSet.AsNoTracking().ToListAsync();
+			else
+				return await DbSet.ToListAsync();
 		}
 
-		public TEntity GetById(int id)
-		{
-			return DbSet.Find(id);
+		public async Task<TEntity> GetByIdAsync(int id)
+		{			
+			return await DbSet.FindAsync(id);
 		}
 
-		public virtual IEnumerable<ValidationResult> Update(TEntity entity)
+		public virtual async Task<IEnumerable<ValidationResult>> UpdateAsync(TEntity entity)
 		{
 			var entry = _context.Entry(entity);
 			DbSet.Attach(entity);
 			entry.State = EntityState.Modified;
 
-			return this.SaveChanges();
+			return await this.SaveChangesAsync();
 		}
 
-		private IEnumerable<ValidationResult> SaveChanges()
+		private async Task<IEnumerable<ValidationResult>> SaveChangesAsync()
 		{
 			var validationErrors = _context.ChangeTracker
 			.Entries<IValidatableObject>()
@@ -70,7 +75,7 @@ namespace StockApp.Infra.Data.Repository
 			.Where(r => r != ValidationResult.Success);
 
 			if (!validationErrors.Any())
-			_context.SaveChanges();
+			await _context.SaveChangesAsync();
 
 			return validationErrors;
 		}

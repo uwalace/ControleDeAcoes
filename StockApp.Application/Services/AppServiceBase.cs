@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace StockApp.Application.Services
 {
@@ -16,14 +17,14 @@ namespace StockApp.Application.Services
 		{
 			_repository = repository;
 		}
-		public IEnumerable<ValidationResult> Create(TEntity entity)
+		public async Task<IEnumerable<ValidationResult>> CreateAsync(TEntity entity)
 		{
-			return _repository.Create(entity);
+			return await _repository.CreateAsync(entity);
 		}
 
-		public void Delete(int id)
-		{
-			_repository.Delete(_repository.GetById(id));
+		public void DeleteAsync(TEntity entity)
+		{			
+			_repository.DeleteAsync(entity);
 		}
 
 		public void Dispose()
@@ -31,24 +32,24 @@ namespace StockApp.Application.Services
 			//_repository.dis;
 		}
 
-		public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, bool @readonly = false)
+		public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, bool @readonly = false)
 		{
-			throw new NotImplementedException();
+			return await _repository.FindAsync(predicate, @readonly);
 		}
 
-		public IEnumerable<TEntity> GetAll(bool @readonly = false)
+		public async Task<IEnumerable<TEntity>> GetAllAsync(bool @readonly = false)
 		{
-			return  _repository.GetAll();
+			return await  _repository.GetAllAsync();
 		}
 
-		public TEntity GetById(int id)
+		public async Task<TEntity> GetByIdAsync(int id)
 		{
-			return _repository.GetById(id);
+			return await _repository.GetByIdAsync(id);
 		}
 
-		public IEnumerable<ValidationResult> Update(TEntity entity)
+		public async Task<IEnumerable<ValidationResult>> UpdateAsync(TEntity entity)
 		{
-			return _repository.Update(entity);
+			return await _repository.UpdateAsync(entity);
 		}
 	}
 }

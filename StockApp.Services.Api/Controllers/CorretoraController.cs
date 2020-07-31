@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StockApp.Application.Dto;
@@ -22,42 +23,46 @@ namespace StockApp.Services.Api.Controllers
 		}
 
 		[HttpGet("corretora")]
-		public IEnumerable<CorretoraDto> Get()
+		public async Task<IEnumerable<CorretoraDto>> GetAsync()
 		{
-			var ret = _mapper.Map<IEnumerable<CorretoraDto>>(_service.GetAll());
+			var ret = _mapper.Map<IEnumerable<CorretoraDto>>(await _service.GetAllAsync());
 			return ret;
 		}
 
 		[HttpGet("corretora/{id:int}")]
-		public CorretoraDto GetById(int id)
+		public async Task<CorretoraDto> GetByIdAsync(int id)
 		{
-			return _mapper.Map<CorretoraDto>(_service.GetById(id));
+			return _mapper.Map<CorretoraDto>(await _service.GetByIdAsync(id));
 		}
 
 		[HttpPost("corretora/create")]
-		public IEnumerable<ValidationResult> Create([FromBody] CorretoraDto model)
+		public async Task<IEnumerable<ValidationResult>> CreateAsync([FromBody] CorretoraDto model)
 		{
 			var entity = _mapper.Map<Corretora>(model);
-			var validationResult = _service.Create(entity);
+			var validationResult = await _service.CreateAsync(entity);
 
 			return validationResult;
 		}
 
 		[HttpPut("corretora/update")]
-		public IEnumerable<ValidationResult> Update([FromBody] CorretoraDto model)
+		public async Task<IEnumerable<ValidationResult>> UpdateAsync([FromBody] CorretoraDto model)
 		{
 			var entity = _mapper.Map<Corretora>(model);
-			_service.Update(entity);
 
-			return _service.Update(entity);
+			return await _service.UpdateAsync(entity);
 		}
 
 		[HttpDelete("corretora/delete/{id:int}")]
-		public ActionResult<string> Delete(int id)
+		public async Task<IActionResult> Delete(int id)
 		{
-			_service.Delete(id);
-
-			return base.Ok();
+			var entity = await _service.GetByIdAsync(id);
+			if (entity != null)
+			{
+				_service.DeleteAsync(entity);
+				return Ok();
+			}
+			else
+				return NotFound();
 		}
 	}
 }

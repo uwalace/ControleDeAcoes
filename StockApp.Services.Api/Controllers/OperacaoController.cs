@@ -26,40 +26,44 @@ namespace StockApp.Services.Api.Controllers
 		}
 
 		[HttpGet("operacao")]
-		public IEnumerable<OperacaoDto> Get()
+		public async Task<IEnumerable<OperacaoDto>> GetAsync()
 		{
-			var ret = _mapper.Map<IEnumerable<OperacaoDto>>(_service.GetAll());
+			var ret = _mapper.Map<IEnumerable<OperacaoDto>>(await _service.GetAllAsync());
 			return ret;
 		}
 
 		[HttpGet("operacao/{id:int}")]
-		public OperacaoDto GetById(int id)
+		public async Task<OperacaoDto> GetByIdAsync(int id)
 		{
-			return _mapper.Map<OperacaoDto>(_service.GetById(id));
+			return _mapper.Map<OperacaoDto>(await _service.GetByIdAsync(id));
 		}
 
 		[HttpPost("operacao/create")]
-		public IEnumerable<ValidationResult> Create([FromBody] OperacaoDto model)
+		public async Task<IEnumerable<ValidationResult>> CreateAsync([FromBody] OperacaoDto model)
 		{
 			var entity = _mapper.Map<Operacao>(model);
-			return _service.Create(entity);
+			return await _service.CreateAsync(entity);
 		}
 
 		[HttpPut("operacao/update")]
-		public IEnumerable<ValidationResult> Update([FromBody] OperacaoDto model)
+		public async Task<IEnumerable<ValidationResult>> UpdateAsync([FromBody] OperacaoDto model)
 		{
 			var entity = _mapper.Map<Operacao>(model);
-			_service.Update(entity);
 
-			return _service.Update(entity);
+			return await _service.UpdateAsync(entity);
 		}
 
 		[HttpDelete("operacao/delete/{id:int}")]
-		public ActionResult<string> Remove(int id)
+		public async Task<IActionResult> RemoveAsync(int id)
 		{
-			_service.Delete(id);
-
-			return base.Ok();
+			var entity = await _service.GetByIdAsync(id);
+			if (entity != null)
+			{
+				_service.DeleteAsync(entity);
+				return Ok();
+			}
+			else
+				return NotFound(id);
 		}
 	}
 }

@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace StockApp.Application.Interfaces
 {
 	public interface IAppService<TEntity> where TEntity : class
 	{
-		IEnumerable<ValidationResult> Create(TEntity entity);
+		Task<IEnumerable<ValidationResult>> CreateAsync(TEntity entity);
 
-		void Delete(int id);
+		void DeleteAsync(TEntity entity);
 
-		IEnumerable<ValidationResult> Update(TEntity entity);
+		Task<IEnumerable<ValidationResult>> UpdateAsync(TEntity entity);
 
-		TEntity GetById(int id);
+		Task<TEntity> GetByIdAsync(int id);
 
-		IEnumerable<TEntity> GetAll(bool @readonly = false);
+		Task<IEnumerable<TEntity>> GetAllAsync(bool @readonly = false);
 
-		IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, bool @readonly = false);
+		Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, bool @readonly = false);
 	}
 }

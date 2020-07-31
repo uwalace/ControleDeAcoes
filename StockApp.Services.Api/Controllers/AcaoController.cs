@@ -5,6 +5,7 @@ using StockApp.Application.Interfaces;
 using StockApp.Application.Dto;
 using StockApp.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace StockApp.Services.Api.Controllers
 {
@@ -22,42 +23,47 @@ namespace StockApp.Services.Api.Controllers
 		}
 
 		[HttpGet("Acao")]
-		public IEnumerable<AcaoDto> Get()
+		public async Task<IEnumerable<AcaoDto>> GetAsync()
 		{
-			var ret = _mapper.Map<IEnumerable<AcaoDto>>(_service.GetAll());
+			var ret = _mapper.Map<IEnumerable<AcaoDto>>(await _service.GetAllAsync());
 			return ret;
 		}
 
 		[HttpGet("Acao/{id:int}")]
-		public AcaoDto GetById(int id)
+		public async Task<AcaoDto> GetByIdAsync(int id)
 		{
-			return _mapper.Map<AcaoDto>(_service.GetById(id));
+			return _mapper.Map<AcaoDto>(await _service.GetByIdAsync(id));
 		}
 
 		[HttpPost("Acao/Create")]
-		public IEnumerable<ValidationResult> Create([FromBody] AcaoDto model)
+		public async Task<IEnumerable<ValidationResult>> CreateAsync([FromBody] AcaoDto model)
 		{
 			var entity = _mapper.Map<Acao>(model);
-			var validationResult = _service.Create(entity);
+			var validationResult = await _service.CreateAsync(entity);
 
 			return validationResult;
 		}
 
 		[HttpPut("Acao/Update")]
-		public IEnumerable<ValidationResult> Update([FromBody] AcaoDto model)
+		public async Task<IEnumerable<ValidationResult>> UpdateAsync([FromBody] AcaoDto model)
 		{
 			var entity = _mapper.Map<Acao>(model);
-			_service.Update(entity);
 
-			return _service.Update(entity);
+			return await _service.UpdateAsync(entity);
 		}
 
 		[HttpDelete("Acao/Delete/{id:int}")]
-		public ActionResult<string> Delete(int id)
+		public async Task<IActionResult> DeleteAsync(int id)
 		{
-			_service.Delete(id);
+			var entity = await _service.GetByIdAsync(id);
+			if (entity != null)
+			{
+				_service.DeleteAsync(entity);
+				return Ok();
+			}
+			else
+				return NotFound();
 
-			return base.Ok();
 		}
 	}
 }
