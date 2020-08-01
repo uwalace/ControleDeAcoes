@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
-using StockApp.Services.Api.AutoMapper;
+using StockApp.Application.AutoMapper;
 
 namespace StockApp.Services.Api.Configurations
 {

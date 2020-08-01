@@ -12,7 +12,7 @@ namespace StockApp.Domain.Interfaces.Repository
 	{
 		Task<IEnumerable<ValidationResult>> CreateAsync(TEntity entity);
 
-		void DeleteAsync(TEntity entity);
+		Task DeleteAsync(TEntity entity);
 
 		Task<IEnumerable<ValidationResult>> UpdateAsync(TEntity entity);
 

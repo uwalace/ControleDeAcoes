@@ -30,7 +30,7 @@ namespace StockApp.Infra.Data.Repository
 			return await this.SaveChangesAsync();
 		}
 
-		public async void DeleteAsync(TEntity entity)
+		public async Task DeleteAsync(TEntity entity)
 		{
 			DbSet.Remove(entity);
 			await _context.SaveChangesAsync();

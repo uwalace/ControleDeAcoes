@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StockApp.Domain.Entities;
+﻿using StockApp.Domain.Entities;
 using StockApp.Domain.Interfaces.Repository;
 using StockApp.Infra.Data.Context;
 
